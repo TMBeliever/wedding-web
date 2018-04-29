@@ -6,7 +6,8 @@ import auth from './auth.vue'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import '@/comment/stylus/index.styl'
-
+import axios from 'axios'
+axios.defaults.headers.common['Authorization'] =localStorage.getItem(localStorage.email)
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)

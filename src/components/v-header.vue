@@ -1,7 +1,7 @@
 <template>
     <div class="header">
       <div class="left">
-        <a href="test.html" class="logo"><img src="../assets/logo.png"></a>
+        <a href="index.html" class="logo"><img src="../assets/logo.png"></a>
         <a href="register.html" target="_blank" class="case">婚庆案例</a>
         <el-dropdown class="one" @command="handleCommand">
   <span class="el-dropdown-link">
@@ -25,10 +25,14 @@
         </el-dropdown>
       </div>
       <div class="right">
-        <div class="auto" v-if="show">
-          <a href="auth.html" >注册</a>
+        <div class="me" v-if="show">
+          <a href="me.html" style="display: inline-block">{{email}},</a>
+          <p style="display: inline-block;cursor: pointer" @click="logout">退出</p>
+        </div>
+        <div class="auto" v-else>
           <a href="auth.html" >登录</a>
         </div>
+
 
       </div>
 
@@ -38,23 +42,52 @@
 
 <script>
 import ElSubmenu from "../../node_modules/element-ui/packages/menu/src/submenu.vue";
-
+import axios from 'axios'
 export default {
   components: {ElSubmenu},
   name:'header',
   data(){
     return {
+      show:Boolean,
+      email:'',
       place:'广西省',
-    }
-  },
-  props:{
-    show: {
-      type: String
+      headers:{
+        'Authorization':localStorage.getItem(localStorage.email)
+      }
     }
   },
   methods:{
     handleCommand(command) {
       this.place = command;
+    },
+    logout() {
+      axios({
+        method: 'post',
+        url: 'http://localhost/blog/public/api/auth/logout',
+        data: {
+        }
+      })
+        .then((res) => {
+          localStorage.removeItem(localStorage.email)
+          delete localStorage.email
+          window.location.href = 'auth.html'
+        })
+        .catch((err) => {
+         if(err.response.status===401){
+           localStorage.removeItem(localStorage.email)
+           delete localStorage.email
+           window.location.href = 'auth.html'
+         }
+        })
+    }
+  },
+  created(){
+    if(localStorage.email){
+      this.show = true
+      this.email = localStorage.email
+    }
+    else{
+      this.show = false
     }
   }
 }
@@ -63,6 +96,7 @@ export default {
 <style scoped lang="stylus" ref="stylesheet/stylus">
   .header
     /*background-color aqua*/
+    min-width 900px
     position fixed
     top 0
     width 100%
@@ -102,5 +136,9 @@ export default {
         top 23px
         a:first-child
           padding-right   10px
+      .me
+        position absolute
+        right 100px
+        top 13px
 
 </style>

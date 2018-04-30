@@ -27,8 +27,8 @@
           <p class="time" style="font-size: 15px;color: #979797">时间：{{data.orders.time}}</p>
           <p class="place" style="font-size: 15px;color: #979797">地点：{{data.orders.hotel.name}}</p>
           <div class="price">
-            <span style="font-size: 15px">布置费 </span><span class="cout"> ¥ 12390</span>
-            <el-button round >报价明细</el-button>
+            <span style="font-size: 15px">布置费 </span><span class="cout"> ¥ {{total}}</span>
+            <el-button round v-popover:budget>报价明细</el-button>
           </div>
           <div class="team">
             <p style="font-size: 18px;font-weight: 600">婚礼团队 <i class="el-icon-arrow-down"></i></p>
@@ -37,6 +37,22 @@
             <p class="role" v-if="data.orders.ho_user">{{data.orders.ho_user.role1.roletype}}-{{data.orders.ho_user.role1.name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>¥ {{data.orders.ho_user.role1.price}}</span></p>
           </div>
         </div >
+        <el-popover
+          ref="budget"
+          placement="right"
+          width="850"
+          trigger="hover">
+          <el-table :data="gridData">
+            <el-table-column width="100" property="item" label="项目"></el-table-column>
+            <el-table-column width="200" property="describe" label="应用实名"></el-table-column>
+            <el-table-column width="100" property="source" label="来源"></el-table-column>
+            <el-table-column width="100" property="quality" label="材质"></el-table-column>
+            <el-table-column width="100" property="price" label="单价（元）"></el-table-column>
+            <el-table-column width="50" property="amount" label="数量"></el-table-column>
+            <el-table-column width="100" property="company" label="单位"></el-table-column>
+            <el-table-column width="100" property="total" label="总价（元）"></el-table-column>
+          </el-table>
+        </el-popover>
       </div>
       <v-footer v-if="this.dataFlag"></v-footer>
     </div>
@@ -51,6 +67,8 @@ export default {
     },
   data(){
     return {
+      total:0,
+      gridData:[],
       scrollY:0,
       scrollB:0,
       data:[],
@@ -82,6 +100,11 @@ export default {
         if(res.status===200){
           this.data = res.data.data
           this.imgUrls = res.data.data.img.split(',')
+          this.gridData = res.data.data.budget
+          for(let i =0;i<this.gridData.length;i++){
+            this.gridData[i].total =  this.gridData[i].price *  this.gridData[i].amount
+            this.total += this.gridData[i].price *  this.gridData[i].amount
+          }
           this.dataFlag = true
         }
       })

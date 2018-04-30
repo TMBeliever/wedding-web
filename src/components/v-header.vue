@@ -2,7 +2,7 @@
     <div class="header">
       <div class="left">
         <a href="index.html" class="logo"><img src="../assets/logo.png"></a>
-        <a href="register.html" target="_blank" class="case">婚庆案例</a>
+        <a href="caseDetail.html#all" target="_blank" class="case">婚庆案例</a>
         <el-dropdown class="one" @command="handleCommand">
   <span class="el-dropdown-link">
     {{place}}<i class="el-icon-arrow-down el-icon--right"></i>

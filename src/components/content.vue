@@ -4,11 +4,11 @@
         <h3>推荐案例</h3>
         <a href="caseDetail.html#all">查看更多<i class="el-icon-arrow-right"></i></a>
         <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="森系" name="first"><v-case :caseData="data" v-if="flag"></v-case></el-tab-pane>
-          <el-tab-pane label="西式" name="second"><v-case :caseData="data" v-if="flag"></v-case></el-tab-pane>
-          <el-tab-pane label="户外" name="third"><v-case :caseData="data" v-if="flag"></v-case></el-tab-pane>
-          <el-tab-pane label="韩式" name="fourth"><v-case :caseData="data" v-if="flag"></v-case></el-tab-pane>
-          <el-tab-pane label="中式" name="five"><v-case :caseData="data" v-if="flag"></v-case></el-tab-pane>
+          <el-tab-pane label="森系" name="first"><v-case :caseData="data" v-if="flag" :total="total"></v-case></el-tab-pane>
+          <el-tab-pane label="西式" name="second"><v-case :caseData="data" v-if="flag" :total="total"></v-case></el-tab-pane>
+          <el-tab-pane label="户外" name="third"><v-case :caseData="data" v-if="flag" :total="total"></v-case></el-tab-pane>
+          <el-tab-pane label="韩式" name="fourth"><v-case :caseData="data" v-if="flag" :total="total"></v-case></el-tab-pane>
+          <el-tab-pane label="中式" name="five"><v-case :caseData="data" v-if="flag" :total="total"></v-case></el-tab-pane>
         </el-tabs>
         <h3>合作酒店</h3>
         <a href="hotelDetail.html#all">查看更多<i class="el-icon-arrow-right"></i></a>
@@ -30,6 +30,7 @@ export default {
    data(){
      return {
        flag : false,
+       total:[],
        hotelFlag:false,
        data:[],
        hotelData:[],
@@ -47,18 +48,58 @@ export default {
         case '森系':
           this.data = this.type1
 //          console.log( this.data)
+          let NUM = 0;
+          for(let j=0;j<this.type1.length;j++){
+            for(let i =0;i<this.type1[j].budget.length;i++){
+              NUM += this.type1[j].budget[i].price * this.type1[j].budget[i].amount
+            }
+            this.total[j]=NUM
+            NUM = 0;
+          }
            break
         case '西式':
           this.data = this.type2
+           NUM = 0;
+          for(let j=0;j<this.type2.length;j++){
+            for(let i =0;i<this.type2[j].budget.length;i++){
+              NUM += this.type2[j].budget[i].price * this.type2[j].budget[i].amount
+            }
+            this.total[j]=NUM
+            NUM = 0;
+          }
           break
         case '户外':
           this.data = this.type3
+         NUM = 0;
+          for(let j=0;j<this.type3.length;j++){
+            for(let i =0;i<this.type3[j].budget.length;i++){
+              NUM += this.type3[j].budget[i].price * this.type3[j].budget[i].amount
+            }
+            this.total[j]=NUM
+            NUM = 0;
+          }
           break
         case '韩式':
           this.data = this.type4
+         NUM = 0;
+          for(let j=0;j<this.type4.length;j++){
+            for(let i =0;i<this.type4[j].budget.length;i++){
+              NUM += this.type4[j].budget[i].price * this.type4[j].budget[i].amount
+            }
+            this.total[j]=NUM
+            NUM = 0;
+          }
           break
         case '中式':
           this.data = this.type5
+        NUM = 0;
+          for(let j=0;j<this.type5.length;j++){
+            for(let i =0;i<this.type5[j].budget.length;i++){
+              NUM += this.type5[j].budget[i].price * this.type5[j].budget[i].amount
+            }
+            this.total[j]=NUM
+            NUM = 0;
+          }
           break
       }
     }
@@ -88,7 +129,15 @@ export default {
              break
          }
          this.data = this.type1
-           this.flag = true
+           let NUM = 0;
+           for(let j=0;j<this.type1.length;j++){
+             for(let i =0;i<this.type1[j].budget.length;i++){
+               NUM += this.type1[j].budget[i].price * this.type1[j].budget[i].amount
+             }
+             this.total[j]=NUM
+             NUM = 0;
+             this.flag = true
+           }
          }
        })
     axios({

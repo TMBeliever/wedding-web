@@ -30,16 +30,22 @@
               <el-tab-pane label="综合" name="id"></el-tab-pane>
               <el-tab-pane label="价格↑" name="sort" v-if="!showPriceB"></el-tab-pane>
               <el-tab-pane label="价格↓" name="desc" v-if="showPriceB"></el-tab-pane>
+              <el-tab-pane label="浏览量↑" name="one" v-if="!browseAction"></el-tab-pane>
+              <el-tab-pane label="浏览量↓" name="two" v-if="browseAction"></el-tab-pane>
             </el-tabs>
           </div>
         </div>
         <div class="nav" v-for="(cases,index) in data" v-if="index<=maxPages&&index>=minPages">
           <a :href="'caseDetail.html#/case/'+(cases.id)"><img :src="cases.img.split(',')[0]"></a>
           <div class="first"><span class="title">{{cases.title}}</span><span class="price">¥{{cases.total}}</span></div>
-          <div class="second">策划师：{{cases.orders.pl_user.role1.name}}</div>
+          <div class="second">
+            <span>策划师：{{cases.orders.pl_user.role1.name}}</span>
+           <span class="browse"><i class="el-icon-view"></i>{{cases.browse}}</span>
+          </div>
           <div class="third"> <i class="el-icon-location-outline" style="font-size: 24px"></i> <span>{{cases.orders.hotel.place}}</span></div>
         </div>
         <div class="blank" v-if="this.data==false">
+          <i class="el-icon-loading"></i>
           <div class="content" v-if="dataFlag">
             没有数据，真是抱歉！
           </div>
@@ -73,9 +79,11 @@ export default {
         maxPrice:0,
         typeAction: '0',
         priceAction:'0,10000000000000',
+        browseAction:false,
         sortAction:'id',
         data:[],
         showData:[],
+        search:'',
         showPriceB:false,
         minPages:0,
         maxPages:19,
@@ -95,6 +103,7 @@ export default {
         url: 'http://localhost/blog/public/api/case/allCase',
         data:{
           type:this.type,
+          search:this.search
         }
       })
         .then((res)=>{
@@ -155,15 +164,36 @@ export default {
           this.sortAction = 'desc'
           this.showPriceB = !this.showPriceB
           break
+        case 'one':
+          this.data.sort((a,b)=>{
+//            console.log(a)
+            return b.browse - a.browse
+          })
+          this.sortAction = 'two'
+          this.browseAction = !this.browseAction
+          break
+        case 'two':
+          this.data.sort((a,b)=>{
+//            console.log(a)
+            return a.browse - b.browse
+          })
+          this.sortAction = 'one'
+          this.browseAction = !this.browseAction
+          break
       }
     },
   },
   created(){
+      if(localStorage.getItem('search')) {
+        this.search = localStorage.getItem('search')
+        localStorage.removeItem('search')
+      }
     axios({
       method:'post',
       url: 'http://localhost/blog/public/api/case/allCase',
       data:{
         type:this.type,
+        search:this.search
       }
     })
       .then((res)=>{
@@ -176,6 +206,7 @@ export default {
             }
             this.data[j].total=NUM
             NUM = 0;
+
           this.dataFlag = true
         }}
         this.showData = this.data
@@ -184,6 +215,9 @@ export default {
         console.log(err)
       })
   },
+  destroyed(){
+    localStorage.removeItem('search')
+  }
 }
 </script>
 
@@ -232,6 +266,16 @@ export default {
             color #979797
             font-size 14px
             margin 10px 0
+            .browse
+              padding-right 10px
+              float right
+              font-size 17px
+              color #EEA9A9
+              .el-icon-view
+                font-size 20px
+                padding-right 6px
+                position relative
+                top 1px
           .third
             padding-left 10px
             padding-bottom 14px
@@ -263,6 +307,11 @@ export default {
           width 100%
           height 250px
           background-color #F4F4F4
+          .el-icon-loading
+            position absolute
+            top 297px
+            left 540px
+            font-size 22px
           .content
             width 200px
             margin 200px auto

@@ -12,6 +12,9 @@ export default new Router({
     },
     {
       path: '/all',component:allCase
+    },
+    {
+      path: '/:id',component:allCase
     }
   ]
 })

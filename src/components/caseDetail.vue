@@ -150,7 +150,7 @@ export default {
           .content
             margin 5px 0
             font-size 16px
-            color #FB966E
+            color #B19693
             width 664px
             word-wrap:break-word
           .time

@@ -23,7 +23,7 @@
           <div class="img">
             <img :src="data.photographer[0].case1s.img.split(',')[0]">
           </div>
-          <div class="backinfo">photographer
+          <div class="backinfo">
             <div class="ceil">
               <p class="title">{{data.photographer[0].case1s.title}}</p>
               <p class="subtitle">{{data.photographer[0].case1s.subtitle}}</p>
@@ -77,12 +77,46 @@
             <p>服务区域</p>
             <p class="place">{{data.role1.place}}</p>
             <p>服务档期</p>
-             <p><span></span><span></span></p>
-            <div class="date"></div>
+             <p class="state"><span class="s"><i class="i"></i>已预订</span><span class="s"><i  class="i" style="background-color: #8c939d"></i>今日忙</span></p>
+            <p class="dateIcon">
+              <i class="el-icon-circle-plus" v-if="!dateInfo" @click="showDate"></i>
+              <i class="el-icon-circle-close" v-if="dateInfo"  @click="showDate"></i>
+            </p>
+            <el-collapse-transition>
+            <div class="date" v-if="dateInfo">
+              <div class="time" v-for="(time,index) in  dateValue">
+                {{time}}
+              </div>
+            </div>
+              </el-collapse-transition>
           </div>
           </el-collapse-transition>
+          <div class="find">
+            <span class="call">联系TA</span>
+            <span class="buy" @click="buyCart">加入购物车</span>
+          </div>
         </div>
-        <div style="height: 400px">???</div>
+        <div class="case">
+          <h2 style="color: #464646">真实婚礼案例</h2>
+          <div class="allCase" v-for="(cases,index) in data.photographer" v-if="index<8||loadingFlag">
+            <a :href="'caseDetail.html#/case/'+cases.case1s.id"><img :src="cases.case1s.img.split(',')[0]"></a>
+            <p>{{cases.case1s.title}}</p>
+          </div>
+          <P class="loading" @click="loadingMore" v-if="!loadingFlag">加载更多</P>
+        </div>
+        <div class="comment">
+          <h2 style="color: #464646">用户点评{{data.commentCount}}条</h2>
+          <div class="nav">
+            <div class="user" v-for="(comment,index) in data.comments"  v-if="index<10">
+              <img src="http://image.izhaowo.com/www2/images/pic75x75.jpg" class="portrait">
+              <ul><li><span class="username">{{comment.role.email}}  </span></li>
+                <li> <span style="font-size: 14px;color:#979797 ">婚礼策划统筹</span></li>
+              </ul>
+              <p class="text">{{comment.content}}</p>
+              <p class="time1">{{comment.created_at}}</p>
+            </div>
+          </div>
+        </div>
         <el-popover
           ref="popover"
           placement="left"
@@ -107,19 +141,50 @@
 
 <script>
   import axios from 'axios'
+  import footer from '@/components/footer'
 export default {
+  components:{
+    'v-footer':footer
+  },
     data(){
       return{
         data:[],
         dataFlag:false,
         Info:false,
+        dateInfo:false,
+        loadingFlag:false,
+        dateValue: []
       }
     },
     methods:{
       showInfo(){
         this.Info = !this.Info
+      },
+      loadingMore(){
+        this.loadingFlag = true
+      },
+      showDate(){
+        this.dateInfo = !this.dateInfo
+      },
+      buyCart() {
+        this.$confirm('是否加入购物车, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '加入成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消加入'
+          });
+        });
       }
     },
+
     created(){
       axios({
         method:'post',
@@ -131,6 +196,9 @@ export default {
         .then((res)=>{
           this.data = res.data.data[0]
           console.log(this.data)
+         for(let i=0;i<res.data.data[0].dates.length;i++){
+            this.dateValue.push(res.data.data[0].dates[i].time)
+         }
           this.dataFlag = true
         })
         .catch((err)=>{
@@ -142,6 +210,16 @@ export default {
 
 <style scoped lang="stylus" ref="stylesheet/stylus">
   .roleDetail
+    width 100%
+    height 100%
+    position relative
+    &:after
+      content '.'
+      visibility hidden
+      height 0
+      line-height 0
+      display block
+      clear both
     .content
       width 1170px
       height 500px
@@ -226,6 +304,7 @@ export default {
         .icon
           font-size 24px
           color #EB7A77
+          cursor pointer
         .info
           .service
             margin-top 0
@@ -246,4 +325,107 @@ export default {
             font-size 13px
             color #464646
             margin-top 0
+          .state
+            font-size 13px
+            color #464646
+            .s
+              margin-right 10px
+            .i
+              margin-right 3px
+              display inline-block
+              width 8px
+              height 8px
+              border-radius 50%
+              background-color #3a8ee6
+          .dateIcon
+            font-size 24px
+            color #3a8ee6
+            cursor pointer
+          .date
+            width 100px
+            margin-left 530px
+            .time
+              margin-bottom 10px
+              color #3a8ee6
+              padding 5px
+              border 1px solid #3a8ee6
+              &:last-child
+                margin-bottom 0
+        .find
+          margin-top 10px
+          .call
+            display inline-block
+            border 1px solid #464646
+            height 36px
+            line-height 36px
+            cursor pointer
+            border-radius 3px
+            width 98px
+            font-size 14px
+            text-align center
+            margin 12px 12px 0 0
+            font-weight 500px
+          .buy
+            text-align center
+            width 98px
+            cursor pointer
+            height 36px
+            line-height 36px
+            display inline-block
+            border: 1px solid #57D2CD
+            font-size 14px
+            border-radius: 3px
+            color: #4EC2BD
+            font-weight 500px
+      .case
+        text-align center
+        .loading
+          cursor pointer
+        .allCase
+          width 271px
+          height 239px
+          margin-right 20px
+          margin-bottom 20px
+          box-shadow: 0 2px 5px 0 rgba(0,0,0,0.05)
+          float left
+          text-align center
+          background-color #fff
+          &:after
+            content '.'
+            visibility hidden
+            height 0
+            line-height 0
+            clear both
+          img
+            width 271px
+            height 175px
+      .comment
+        .nav
+          .user
+            width 350px
+            .portrait
+              display inline-block
+              height 64px;
+              width 64px;
+              border-radius 50%;
+              border 1px solid rgba(0, 0, 0, 0.05);
+              box-sizing border-box;
+              -moz-box-sizing border-box;
+              -webkit-box-sizing border-box;
+            ul
+              display inline-block
+              list-style:none
+              position relative
+              top -20px
+              left -30px
+              li
+                margin-bottom  8px
+            .text
+              width 1100px
+              margin-top -15px
+            .time1
+              margin-top -5px
+              font-size 13px
+              color #979797
+              margin-bottom 5px
 </style>

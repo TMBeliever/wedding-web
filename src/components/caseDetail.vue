@@ -2,7 +2,8 @@
     <div class="caseDetail">
       <div class="content" v-if="this.dataFlag">
         <p class="title">案例图片 <i class="el-icon-circle-check-outline"></i></p>
-        <div class="all">
+
+        <div class="all" >
           <div class="img" v-for="(url,index) in this.imgUrls" v-if="index<4||flag"><img :src="url"></div>
           <div class="showAll"><el-button type="primary" round @click="showAll" v-if="!flag">查看全部图片</el-button></div>
           <p>新人评价 <i class="el-icon-circle-check-outline"></i></p>
